@@ -1,5 +1,6 @@
 # Phishing-Awareness
- A Python script designed to educate and engage users in understanding the threats posed by phishing attacks. This interactive challenge presents a series of simulated messages, where participants must discern between phishing attempts and legitimate communications. By simulating real-world scenarios, the program aims to provide users with a hands-on experience, enhancing their awareness of phishing threats.
+
+A Python script designed to educate and engage users in understanding the threats posed by phishing attacks. This interactive challenge presents a series of simulated messages, where participants must discern between phishing attempts and legitimate communications. By simulating real-world scenarios, the program aims to provide users with a hands-on experience, enhancing their awareness of phishing threats.
 
 # Phishing Awareness Challenge Updates
 
