@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phishing Awareness Challenge</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #3498db;
+            color: #fff;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            transition: background-color 0.5s, color 0.5s;
+        }
+
+        h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.5s, color 0.5s;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        input[type="submit"] {
+            background-color: #3498db;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #2980b9;
+        }
+
+        .toggle-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            cursor: pointer;
+        }
+
+        .toggle-icon {
+            font-size: 24px;
+            margin-right: 8px;
+        }
+
+        .toggle-text {
+            font-size: 16px;
+        }
+
+        /* Dark mode styles */
+        body.dark-theme {
+            background-color: #333;
+            color: #fff;
+        }
+
+        form.dark-theme {
+            background-color: #333;
+            color: #fff;
+        }
+
+        .dark-theme label {
+            color: #fff;
+        }
+
+        .dark-theme input[type="text"],
+        .dark-theme input[type="submit"] {
+            background-color: #555;
+            color: #fff;
+        }
+
+        .dark-theme input[type="text"]:focus {
+            border: 1px solid #777;
+        }
+    </style>
+    <script src="{{ url_for('static', filename='js/dark.js') }}"></script>
+</head>
+
+<body>
+    <div class="toggle-container" onclick="toggleTheme()">
+        <span class="toggle-icon">&#9728;</span>
+        <span class="toggle-text">Toggle Theme</span>
+    </div>
+
+    <div id="intro">
+        <h1>Welcome to the Phishing Awareness Challenge!</h1>
+
+        <form id="intro-form" method="POST" action="/questions/0">
+            <label for="name">Enter your name:</label>
+            <input type="text" id="name" name="name" required><br>
+            <input type="submit" value="Start Challenge">
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('intro-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+            document.getElementById('intro').style.animation = 'fadeOut 1s';
+            setTimeout(function () {
+                window.location.href = "/questions/0";
+            }, 1000);
+        });
+    
+        // Check for theme preference in local storage
+        const savedTheme = localStorage.getItem('theme');
+        const body = document.body;
+        const form = document.querySelector('form');
+    
+        if (savedTheme === 'dark') {
+            body.classList.add('dark-theme');
+            form.classList.add('dark-theme');
+        }
+    
+        function toggleTheme() {
+            if (body.classList.contains('dark-theme')) {
+                body.classList.remove('dark-theme');
+                form.classList.remove('dark-theme');
+                localStorage.setItem('theme', 'light'); // Save the preference
+            } else {
+                body.classList.add('dark-theme');
+                form.classList.add('dark-theme');
+                localStorage.setItem('theme', 'dark'); // Save the preference
+            }
+        }
+    </script>
+</body>
+
+</html>

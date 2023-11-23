@@ -1,83 +1,100 @@
 import random
 import sqlite3
+from flask import Flask, render_template, g, request, url_for, redirect
 
-# Create the SQLite database
-conn = sqlite3.connect('phishing_challenge.db')
-cursor = conn.cursor()
+app = Flask(__name__)
+
+DATABASE = 'phishing_challenge.db'
+
+# Function to get the database connection
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = sqlite3.connect(DATABASE)
+    return db
 
 # Create the table if it doesn't exist
-cursor.execute('''
-    CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        score INTEGER NOT NULL
-    )
-''')
-conn.commit()
+with app.app_context():
+    cursor = get_db().cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            score INTEGER NOT NULL
+        )
+    ''')
+    get_db().commit()
 
-# Phishing and legitimate messages
+# Phishing and legitimate messages with images
 phishing_messages = [
-    "Congratulations! You've won a free vacation. Click the link to claim your prize.",
-    "Your bank account has been compromised. Please click the link to reset your password.",
-    "Urgent message: Your email account will be suspended. Verify your account by clicking the link.",
+    {"label": "Phishing Image 1", "image": "phishing_image_1.jpg"},
+    # Add more phishing messages as needed
 ]
 
 legitimate_messages = [
-    "Hello, this is your friend. Can you please send me the homework?",
-    "Your monthly newsletter is ready. Click the link to read it.",
-    "You have a new message on your social media account. Log in to check it.",
+    {"label": "Legitimate Image 1", "image": "legitimate_image_1.jpg"},
+    # Add more legitimate messages as needed
 ]
 
-# Function to play the game
-def play_game():
-    print("Welcome to the Phishing Awareness Challenge!")
-    name = input("Enter your name: ")
+# Function to process answers and display results
+def process_answers():
     score = 0
+    name = request.form.get('name')
 
-    while True:
-        is_phishing = random.choice([True, False])
-        message = random.choice(phishing_messages if is_phishing else legitimate_messages)
+    for i in range(len(phishing_messages)):
+        user_input = request.form.get(f'answer_{i}')
+        is_phishing = i % 2 == 0  # Every even index is a phishing question
 
-        print("\nMessage:")
-        print(message)
-
-        print("1. Phishing")
-        print("2. Legitimate")
-        user_input = input("Enter '1' or '2': ")
-
-        if (is_phishing and user_input == '1') or (not is_phishing and user_input == '2'):
-            print("Correct! This message is", "phishing" if is_phishing else "legitimate")
+        if (is_phishing and user_input == 'phishing') or (not is_phishing and user_input == 'legitimate'):
             score += 1
-        else:
-            print("Incorrect. This message is", "phishing" if is_phishing else "legitimate")
-
-        play_again = input("Play again? (y/n): ").strip().lower()
-
-        if play_again != 'y':
-            break
-
-    print(f"Your score is {score} out of messages checked.")
 
     # Insert the user and score into the database
+    cursor = get_db().cursor()
     cursor.execute('INSERT INTO users (name, score) VALUES (?, ?)', (name, score))
-    conn.commit()
+    get_db().commit()
+
+    question_index = int(request.form.get('question_index')) + 1
+
+    if question_index < len(phishing_messages):
+        # If there are more questions, redirect to the next question
+        return redirect(url_for('show_question', question_index=question_index, name=name))
+    else:
+        # Display the leaderboard if all questions are answered
+        leaderboard = display_leaderboard()
+        return render_template('result.html', name=name, score=score, leaderboard=leaderboard)
 
 # Function to display leaderboard
 def display_leaderboard():
-    print("\nLeaderboard:")
+    cursor = get_db().cursor()
     cursor.execute('SELECT name, score FROM users ORDER BY score DESC LIMIT 3')
     leaderboard = cursor.fetchall()
-    for position, (name, score) in enumerate(leaderboard, start=1):
-        print(f"{position}. {name}: {score} points")
+    return leaderboard
 
-# Main loop
-while True:
-    play_game()
-    display_leaderboard()
+# Routes
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    if request.method == 'POST':
+        # If the form is submitted, redirect to the first question
+        name = request.form.get('name')
+        return render_template('questions.html', question_index=0, name=name, phishing_messages=phishing_messages)
+    else:
+        return render_template('enter_name.html', phishing_messages=phishing_messages)
 
-    play_again = input("Do you want to play again? (y/n): ").strip().lower()
-    if play_again != 'y':
-        break
+@app.route('/questions/<int:question_index>', methods=['GET', 'POST'])
+def show_question(question_index):
+    if request.method == 'POST':
+        return process_answers()
+    else:
+        # Display the question based on the index
+        name = request.args.get('name')
+        return render_template('questions.html', question_index=question_index, name=name, phishing_messages=phishing_messages)
+
+# ... (remaining code)
+
+if __name__ == '__main__':
+    app.run(debug=False)
 
 # Close the database connection
-conn.close()
+conn = get_db()
+if conn is not None:
+    conn.close()
