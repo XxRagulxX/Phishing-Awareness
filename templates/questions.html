@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phishing Awareness Challenge</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/question_style.css') }}">
+</head>
+
+<body>
+    <div class="toggle-container" onclick="toggleTheme()">
+        <span class="toggle-icon">&#9728;</span>
+        <span class="toggle-text">Toggle Theme</span>
+    </div>
+
+    <h1>Question {{ question_index }}</h1>
+
+    <form id="question-form" method="POST" action="/questions/{{ question_index }}">
+        <label for="name">Name: {{ name }}</label><br><br>
+
+        {% set is_phishing_question = is_phishing %}
+
+        <p>{{ message['label'] }}</p>
+
+        {% set image_url = url_for('static', filename='images/' + message['image']) %}
+        <img src="{{ image_url }}" alt="{{ message['label'] }}" width="100%" height="auto" class="image-link"
+            onclick="openModal('{{ image_url }}')"><br>
+
+        <input type="radio" id="phishing" name="answer" value="phishing" required>
+        <label for="phishing">Phishing</label>
+        <input type="radio" id="legitimate" name="answer" value="legitimate" required>
+        <label for="legitimate">Legitimate</label><br><br>
+
+        <input type="hidden" name="name" value="{{ name }}">
+        <input type="hidden" name="question_index" value="{{ question_index }}">
+        <input type="submit" value="Next Question">
+    </form>
+
+    <form method="POST" action="/">
+        <input type="hidden" name="exit" value="true">
+        <input type="submit" value="Exit">
+    </form>
+
+    <div id="myModal" class="modal">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <img class="modal-content" id="img01">
+    </div>
+
+    <script src="{{ url_for('static', filename='js/questions.js') }}"></script>
+</body>
+
+</html>

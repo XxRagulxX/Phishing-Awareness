@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phishing Awareness Challenge - Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/results_style.css') }}">
+    <script src="{{ url_for('static', filename='js/dark.js') }}"></script>
+</head>
+
+<body>
+    <div class="toggle-container" onclick="toggleTheme()">
+        <span class="toggle-icon">&#9728;</span>
+        <span class="toggle-text">Toggle Theme</span>
+    </div>
+
+    <h1>Phishing Awareness Challenge</h1>
+
+    <div class="result-container">
+        <h2>Challenge Completed!</h2>
+
+        <p>Thank you, <strong>{{ name }}</strong>, for completing the Phishing Awareness Challenge.</p>
+        <p>Your total score is: <strong>{{ score }}</strong></p>
+
+        <h2>Leaderboard</h2>
+        <ol>
+            {% for entry in leaderboard %}
+                <li>{{ entry[0] }} - <strong>{{ entry[1] }}</strong></li>
+            {% endfor %}
+        </ol>
+    </div>
+
+</body>
+
+</html>

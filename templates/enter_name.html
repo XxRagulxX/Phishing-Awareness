@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phishing Awareness Challenge</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        body {
+            animation: gradientAnimation 20s infinite;
+            background-size: 400% 400%;
+            background-image: linear-gradient(45deg, #3498db, #55efc4, #fdcb6e, #d63031);
+            animation-duration: 15s;
+            animation-timing-function: ease-in-out;
+        }
+
+        @keyframes gradientAnimation {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+    </style>
+    <script src="{{ url_for('static', filename='js/dark.js') }}"></script>
+</head>
+
+<body>
+    <div class="toggle-container" onclick="toggleTheme()">
+        <span class="toggle-icon">&#9728;</span>
+        <span class="toggle-text">Toggle Theme</span>
+    </div>
+
+    <div id="intro" class="animated fadeInDown">
+        <h1>Welcome to the Phishing Awareness Challenge!</h1>
+
+        <form id="intro-form" method="POST" action="/questions/0" class="animated fadeInUp">
+            <label for="name">Enter your name:</label>
+            <input type="text" id="name" name="name" required>
+            <br>
+            <input type="submit" value="Start Challenge">
+        </form>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/intro.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js"></script>
+    <script>
+        new WOW().init();
+    </script>
+</body>
+
+</html>
